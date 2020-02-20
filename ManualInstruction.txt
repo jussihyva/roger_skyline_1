@@ -174,15 +174,43 @@
 		sudo chown -R $USER:$USER /var/www/rs1
 		sudo chmod -R 755 /var/www/rs1
 		cat <<EOF > /var/www/rs1/index.html
+<!DOCUMENT HTML>
 <html>
-    <head>
-        <title>Welcome to Your_domain!</title>
-    </head>
-    <body>
-        <h1>Success!  The your_domain virtual host is working!</h1>
-    </body>
+  <head>
+    <title>Roger skyline 1 (Hive Helsinki Project)!</title>
+  </head>
+  <style>
+    h1 {color: red;}
+  </style>
+  <body>
+    <h1 id="myText">A simple web page for "Roger Skyline 1" project.</h1>
+    <button onclick="displayResult()">Click to change my colour!</button>
+    <script>
+      text=0;
+      function displayResult()
+      {
+        if (text == 0)
+	{
+          var id = document.getElementById("myText");
+          id.innerHTML = "Jee..., you did it!";
+          id.style["color"] = "blue";
+          text = 1;
+        }
+        else
+	{
+          var id = document.getElementById("myText");
+          id.innerHTML = "Jee..., you did it once again!";
+          id.style["color"] = "green";
+          text = 0;
+        }
+      }
+    </script>
+  </body>
 </html>
 EOF
+
+		cp /etc/apache2/ports.conf
+			# Listen 80
 
 
 		sudo cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/rs1.conf
