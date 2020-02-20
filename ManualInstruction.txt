@@ -68,6 +68,7 @@
 			network:
 			ethernets:
 				enp0s3:
+<<<<<<< HEAD
 				  addresses: [10.0.2.1/30]
 				  gateway4: 10.0.2.2
 				  nameservers:
@@ -78,29 +79,43 @@
 				  nameservers:
 					addresses: [10.51.1.253]
 				  dhcp4: no
+=======
+					addresses: [10.0.2.1/30]
+					gateway4: 10.0.2.2
+					nameservers:
+						addresses: [10.51.1.253]
+					dhcp4: no
+				enp0s8:
+					dhcp4: yes
+>>>>>>> bf8e2f8824f7e32a07d06faaab1f97d629181ee3
 			version: 2
 			juhani@rs1:~$
 
 
 5. Copy SSH key to virtual Machine
 
-		- ssh-copy-id -p 2222 juhani@127.0.0.1
+		- ssh-copy-id -p 2222 juhani@localhost
 
 
 6. Enable Root access
 		- sudo passwd
 
-		- cat /etc/ssh/sshd_config
+
+6. Set SSH access rights
+
+		- sudo vim /etc/ssh/sshd_config
 
 			Port 2222
 			PermitRootLogin prohibit-password
 			PasswordAuthentication no
 
-		-netstat -tulpn
+		systemctl restart sshd
 
 7. Instll psad
 	- sudo apt install psad
 			local only
+
+	systemctl start psad
 
 8. Activate ufw
 		sudo ufw status
@@ -144,7 +159,69 @@ EOF
 
 12. Activate psad (DOS)
 
-sudo iptables -A INPUT -j LOG
-sudo iptables -A FORWARD -j LOG
-sudo iptables -F
+	ssh -p 2222 -l juhani localhost
+	ssh -p 2222 -l juhani 10.13.200.134
 
+	sudo vim /etc/psad/psad.conf
+		IPT_SYSLOG_FILE             /var/log/syslog;
+
+
+	sudo iptables -P INPUT ACCEPT
+	sudo iptables -F
+	sudo iptables -A INPUT -i lo -j ACCEPT
+	sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+	sudo iptables -A INPUT -p tcp --dport 2222 -j ACCEPT
+	sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+	sudo iptables -A INPUT -j LOG
+	sudo iptables -A FORWARD -j LOG
+	sudo iptables -A INPUT -j DROP
+	sudo iptables -P INPUT DROP
+
+
+	sudo iptables -S
+	sudo psad -S
+
+
+	tail -f /var/log/syslog
+
+	ssh -p 222 -l juhani 10.13.200.134
+	ssh -p 23 -l juhani 10.13.200.134
+
+	sudo psad --sig-update
+	sudo service psad restart
+
+	while true; do sudo psad -S; sudo iptables -S | grep PSAD ; sleep 2; done
+
+
+13. Activate fail2ban
+
+	sudo vim /etc/fail2ban/jail.local
+
+	systemctl restart fail2ban
+
+	tail -f /var/log/fail2ban.log
+
+
+Logfiles.
+
+
+Apache2:
+	tail -f 
+
+
+
+20. Set timezone
+
+ls -l /etc/localtime
+ls -l /etc/localtime
+sudo rm /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+
+
+
+
+21. Install portsentry
+
+	sudo apt-get install portsentry
+
+	sudo nmap -PN -sS 10.13.200.134
