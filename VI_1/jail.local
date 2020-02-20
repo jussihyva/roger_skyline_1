@@ -1,0 +1,8 @@
+[apache-hive]
+enabled  = true
+filter   = apache-hive
+action   = iptables-multiport[name=apache-hive, port="http,https"]
+logpath  = /var/log/apache2/access.log
+bantime  = 60
+maxretry = 3
+
