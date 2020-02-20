@@ -58,8 +58,6 @@
   0 0 * * *   date ; bash ~/crontab_monitoring.sh
 
 
-
-
 9. Set static IP address
 
 		- cat /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
@@ -68,7 +66,6 @@
 			network:
 			ethernets:
 				enp0s3:
-<<<<<<< HEAD
 				  addresses: [10.0.2.1/30]
 				  gateway4: 10.0.2.2
 				  nameservers:
@@ -79,18 +76,8 @@
 				  nameservers:
 					addresses: [10.51.1.253]
 				  dhcp4: no
-=======
-					addresses: [10.0.2.1/30]
-					gateway4: 10.0.2.2
-					nameservers:
-						addresses: [10.51.1.253]
-					dhcp4: no
-				enp0s8:
-					dhcp4: yes
->>>>>>> bf8e2f8824f7e32a07d06faaab1f97d629181ee3
 			version: 2
 			juhani@rs1:~$
-
 
 5. Copy SSH key to virtual Machine
 
@@ -225,3 +212,4 @@ sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 	sudo apt-get install portsentry
 
 	sudo nmap -PN -sS 10.13.200.134
+
