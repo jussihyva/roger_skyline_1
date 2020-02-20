@@ -80,12 +80,17 @@
 					addresses: [10.51.1.253]
 				  dhcp4: no
 				enp0s8:
-				  addresses: [10.13.200.133/30]
+				  addresses: [10.13.200.133/16]
+				  gateway4: 10.13.254.254
 				  nameservers:
 					addresses: [10.51.1.253]
 				  dhcp4: no
 			version: 2
 			juhani@rs1:~$
+
+			sudo netplan apply
+			netstat -nr
+			ip a
 
 11. Copy SSH key to virtual Machine
 
@@ -225,6 +230,12 @@ sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 21. Install portsentry
 
 	sudo apt-get install portsentry
+
+	cat /etc/default/portsentry
+		TCP_MODE="tcp"
+		UDP_MODE="udp"
+
+	systemctl restart portsentry
 
 	sudo nmap -PN -sS 10.13.200.134
 
