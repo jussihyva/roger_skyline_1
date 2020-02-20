@@ -1,0 +1,3 @@
+@reboot     date ; bash ~/apt-get_update_upgrade.sh
+0 4 * * 6   date ; bash ~/apt-get_update_upgrade.sh
+0 0 * * *   date ; bash ~/crontab_monitoring.sh
