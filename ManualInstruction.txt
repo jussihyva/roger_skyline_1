@@ -138,6 +138,12 @@
 	sudo iptables -P INPUT DROP
 	sudo iptables -S
 
+	iptables-restore  < /etc/iptables/rules.v4
+	ip6tables-restore < /etc/iptables/rules.v6
+	systemctl stop    netfilter-persistent
+	systemctl start   netfilter-persistent
+	systemctl restart netfilter-persistent
+
 17. Activate psad (DOS)
 
 	sudo vim /etc/psad/psad.conf
@@ -168,9 +174,7 @@
 	ssh -p 23 -l juhani 10.13.200.134
 
 	sudo apt-get install iptables-persistent
-	su - root
-	iptables-save > /etc/iptables/rules.v4
-	exit
+	sudo iptables-save
 
 9. Install Apache
 		sudo apt install apache2
@@ -283,4 +287,12 @@ sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 	systemctl restart portsentry
 
 	sudo nmap -PN -sS 10.13.200.134
+
+
+Check services
+	apt search "docker" | grep -i installed
+	apt search "vagrant" | grep -i installed
+	apt search "traefik" | grep -i installed
+	service --status-all | egrep " - "
+	service --status-all | egrep " - "
 
