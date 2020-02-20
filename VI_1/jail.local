@@ -6,3 +6,7 @@ logpath  = /var/log/apache2/access.log
 bantime  = 60
 maxretry = 3
 
+[sshd]
+port    = 2222
+bantime  = 60
+maxretry = 3
