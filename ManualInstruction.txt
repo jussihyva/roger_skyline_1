@@ -293,6 +293,6 @@ Check services
 	apt search "docker" | grep -i installed
 	apt search "vagrant" | grep -i installed
 	apt search "traefik" | grep -i installed
-	service --status-all | egrep " - "
+	service --status-all | egrep " + "
 	service --status-all | egrep " - "
 
