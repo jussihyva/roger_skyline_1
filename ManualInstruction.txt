@@ -10,19 +10,27 @@
 3. login to the server
 		- ssh -l juhani -p 22 localhost
 
-4. Verify disk size and partitions
+
+4. Set timezone
+
+	ls -l /etc/localtime
+	ls -l /etc/localtime
+	sudo rm /etc/localtime
+	sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+
+5. Verify disk size and partitions
 	- df -BM
 	- df -BMB
 	- sudo fdisk -l
 
 	Save result to folder V_1
 
-5. Enable Root access
+6. Enable Root access
 	- sudo passwd
 	  password_for_root
 	  exit
 
-6. Create SW upgrade script
+7. Create SW upgrade script
 
   su - root
   cat /root/apt-get_update_upgrade.sh
@@ -33,7 +41,7 @@
     date >> /var/log/update_script.log 2>&1
     apt-get upgrade -y >> /var/log/update_script.log 2>&1
 
-7. Create crontab monitoring script
+8. Create crontab monitoring script
 
   su - root
   cat /root/crontab_monitoring.sh
@@ -57,16 +65,16 @@
   fi;
 
 
-8. Activate crontab
+9. Activate crontab
   @reboot     date ; bash ~/apt-get_update_upgrade.sh
   0 4 * * 6   date ; bash ~/apt-get_update_upgrade.sh
   0 0 * * *   date ; bash ~/crontab_monitoring.sh
 
-9. Check mail
+10. Check mail
 	su - root
 	mail
 
-10. Set static IP address
+11. Set static IP address
 
 		- cat /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 
@@ -92,12 +100,12 @@
 			netstat -nr
 			ip a
 
-11. Copy SSH key to virtual Machine
+12. Copy SSH key to virtual Machine
 
 		- ssh-copy-id -p 22 juhani@localhost
 
 
-12. Set SSH access rights
+13. Set SSH access rights
 
 		- sudo vim /etc/ssh/sshd_config
 
@@ -107,16 +115,16 @@
 
 		systemctl restart sshd
 
-13. login to the server
+14. login to the server
 		- ssh -l juhani -p 2222 localhost
 
-14. Instll psad
+15. Instll psad
 	- sudo apt install psad
 			local only
 
 	systemctl start psad
 
-15. Activate ufw
+16. Activate ufw
 		sudo ufw status
 		sudo ufw enable
 		sudo ufw status
@@ -124,7 +132,7 @@
 		sudo ufw allow 443/tcp
 		sudo ufw default deny incoming
 
-16. Set iptables
+17. Set iptables
 
 	sudo iptables -P INPUT ACCEPT
 	sudo iptables -F
@@ -144,7 +152,7 @@
 	systemctl start   netfilter-persistent
 	systemctl restart netfilter-persistent
 
-17. Activate psad (DOS)
+18. Activate psad (DOS)
 
 	sudo vim /etc/psad/psad.conf
 		IPT_SYSLOG_FILE             /var/log/syslog;
@@ -176,7 +184,7 @@
 	sudo apt-get install iptables-persistent
 	sudo iptables-save
 
-9. Install Apache
+19. Install Apache
 		sudo apt install apache2
 		sudo mkdir /var/www/rs1
 		sudo chown -R $USER:$USER /var/www/rs1
@@ -236,7 +244,7 @@ EOF
 
 
 
-13. Activate fail2ban
+20. Activate fail2ban
 
 	sudo vim /etc/fail2ban/jail.local
 		[apache-hive]
@@ -266,13 +274,6 @@ Apache2:
 
 
 
-20. Set timezone
-
-ls -l /etc/localtime
-ls -l /etc/localtime
-sudo rm /etc/localtime
-sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
-
 
 
 
@@ -289,10 +290,24 @@ sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 	sudo nmap -PN -sS 10.13.200.134
 
 
-Check services
+22. Check services
 	apt search "docker" | grep -i installed
 	apt search "vagrant" | grep -i installed
 	apt search "traefik" | grep -i installed
 	service --status-all | egrep " + "
 	service --status-all | egrep " - "
+
+
+23. Install Ansible
+
+	sudo -E apt-add-repository ppa:ansible/ansible
+	sudo apt update
+	sudo apt install ansible
+	sudo apt-get install python-apt
+	sudo vim /etc/ansible/ansible.cfg
+		remote_port    = 2222
+
+
+	ansible-playbook --ask-become-pass roger_skyline_1/VI_2/Install_Apache2.yml
+
 
