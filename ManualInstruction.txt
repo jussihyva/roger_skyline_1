@@ -226,7 +226,7 @@ EOF
 </html>
 EOF
 
-		cp /etc/apache2/ports.conf
+		sudo vim /etc/apache2/ports.conf
 			# Listen 80
 
 
@@ -241,12 +241,14 @@ EOF
 
 		sudo apache2ctl configtest
 
-		sudo systemctl restart apache2
+		sudo systemctl reload apache2
 
-		https://10.13.200.134/
+		https://10.13.200.129/
 
 
 20. Activate fail2ban
+
+	sudo apt-get install fail2ban
 
 	sudo vim /etc/fail2ban/jail.local
 		[apache-hive]
