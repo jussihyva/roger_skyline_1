@@ -318,3 +318,9 @@ Apache2:
 	ansible-playbook --ask-become-pass roger_skyline_1/VI_2/Install_Apache2.yml
 
 
+
+
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 -subj /C=FI/ST=75/L=Espoo/O=rs1/OU=rs1/CN=RS1/emailAddress=jkauppi@student.hive.fi -keyout /etc/ssl/private/rs1_selfsigned.key -out /etc/ssl/certs/rs1_selfsigned.crt
+sudo openssl dhparam -dsaparam -out /etc/ssl/certs/rs1.pem 4096
+
+
