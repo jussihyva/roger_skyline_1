@@ -250,6 +250,7 @@ EOF
 
 	sudo apt-get install fail2ban
 
+	sudo cp VI_2/apache-hive.conf /etc/fail2ban/filter.d/
 	sudo vim /etc/fail2ban/jail.local
 		[apache-hive]
 		enabled  = true
@@ -268,17 +269,7 @@ EOF
 
 	tail -f /var/log/fail2ban.log
 	tail -f /var/log/auth.log
-
-
-Logfiles.
-
-
-Apache2:
-	tail -f 
-
-
-
-
+	tail -f /var/log/apache2/access.log
 
 
 21. Install portsentry
@@ -289,17 +280,23 @@ Apache2:
 		TCP_MODE="tcp"
 		UDP_MODE="udp"
 
+	systemctl start portsentry
 	systemctl restart portsentry
 
-	sudo nmap -PN -sS 10.13.200.134
+	sudo vim /etc/portsentry/portsentry.conf
+		BLOCK_UDP="1"
+		BLOCK_TCP="1"
+		#KILL_ROUTE="/sbin/route add -host $TARGET$ reject"
+		KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"
+		#KILL_HOSTS_DENY="ALL: $TARGET$ : DENY"
 
 
 22. Check services
 	apt search "docker" | grep -i installed
 	apt search "vagrant" | grep -i installed
 	apt search "traefik" | grep -i installed
-	service --status-all | egrep " + "
-	service --status-all | egrep " - "
+	service --status-all | egrep " \+ "
+	service --status-all | egrep " \- "
 
 
 23. Install Ansible
