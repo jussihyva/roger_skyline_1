@@ -13,59 +13,51 @@
 
 4. Set timezone
 
-	ls -l /etc/localtime
+	date
 	ls -l /etc/localtime
 	sudo rm /etc/localtime
 	sudo ln -s /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+	ls -l /etc/localtime
+	date
 
 5. Verify disk size and partitions
-	- df -BM
-	- df -BMB
-	- sudo fdisk -l
+	df -BM
+	df -BMB
+	sudo fdisk -l
 
 	Save result to folder V_1
 
-6. Enable Root access
-	- sudo passwd
-	  password_for_root
-	  exit
+6. Install psad (Will install sendmail and mail as well)
 
-7. Create SW upgrade script
+	sudo apt install psad
+			local only
 
-  su - root
-  cat /root/apt-get_update_upgrade.sh
-    date >> /var/log/update_script.log 2>&1
-    sleep 60
-    apt-get update -y >> /var/log/update_script.log 2>&1
-    sleep 60
-    date >> /var/log/update_script.log 2>&1
-    apt-get upgrade -y >> /var/log/update_script.log 2>&1
+	systemctl start psad
 
-8. Create crontab monitoring script
+7. Enable Root access
+	sudo passwd
+	password_for_root
 
-  su - root
-  cat /root/crontab_monitoring.sh
-  #!/bin/bash
+8. Create SW upgrade script
 
-  CRONTAB_MD5="/root/crontab_md5"
-  CRONTAB_FILE="/var/spool/cron/crontabs/root"
+	su - root
+	cat <<EOF > /root/apt-get_update_upgrade.sh
+	date >> /var/log/update_script.log 2>&1
+	sleep 60
+	apt-get update -y >> /var/log/update_script.log 2>&1
+	sleep 60
+	date >> /var/log/update_script.log 2>&1
+	apt-get upgrade -y >> /var/log/update_script.log 2>&1
+EOF
+	cat /root/apt-get_update_upgrade.sh
 
-  MD5=$(/usr/bin/md5sum $CRONTAB_FILE)
+9. Create crontab monitoring script
 
-  if [ ! -f $CRONTAB_MD5 ]
-  then
-	echo "$MD5" > $CRONTAB_MD5
-	exit 0;
-  fi;
+	su - root
+	cp /home/juhani/roger_skyline_1/V_1/crontab_monitoring.sh ./
+	cat crontab_monitoring.sh
 
-  if [ "$MD5" != "$(cat $CRONTAB_MD5)" ]
-  then
-	echo "$MD5" > $CRONTAB_MD5
-	echo "$CRONTAB_FILE has been changed!" | mail -s "$CRONTAB_FILE was changed!" root@localhost
-  fi;
-
-
-9. Activate crontab
+10. Activate crontab
   crontab -l
   crontab -e
   @reboot     date ; bash ~/apt-get_update_upgrade.sh
@@ -73,44 +65,51 @@
   0 4 * * 6   date ; bash ~/apt-get_update_upgrade.sh
   0 0 * * *   date ; bash ~/crontab_monitoring.sh
 
-10. Check mail
+  crontab -l
+
+11. Check mail
 	su - root
 	mail
 
-11. Set static IP address
+12. Set static IP address
 
-		- cat /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+	sudo touch /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 
-			juhani@rs1:~$ cat /etc/netplan/50-cloud-init.yaml
-			network:
-			ethernets:
-				enp0s3:
-				  addresses: [10.0.2.1/30]
-				  gateway4: 10.0.2.2
-				  nameservers:
+	cat /etc/netplan/50-cloud-init.yaml
+	su - root
+	cat <<EOF > /etc/netplan/50-cloud-init.yaml
+	network:
+		ethernets:
+			enp0s3:
+				addresses: [10.0.2.1/30]
+				gateway4: 10.0.2.2
+				nameservers:
 					addresses: [10.51.1.253]
-				  dhcp4: no
-				enp0s8:
-				  addresses: [10.13.200.133/16]
-				  gateway4: 10.13.254.254
-				  nameservers:
+				dhcp4: no
+			enp0s8:
+				addresses: [10.13.200.129/16]
+				gateway4: 10.13.254.254
+				nameservers:
 					addresses: [10.51.1.253]
-				  dhcp4: no
-			version: 2
-			juhani@rs1:~$
+				dhcp4: no
+		version: 2
+EOF
 
-			sudo netplan apply
-			netstat -nr
-			ip a
-
-12. Copy SSH key to virtual Machine
-
-		- ssh-copy-id -p 22 juhani@localhost
+	exit
+	cat /etc/netplan/50-cloud-init.yaml
+	sudo netplan apply
+	netstat -nr
+	ip a
 
 
-13. Set SSH access rights
+13. Copy SSH key to virtual Machine
 
-		- sudo vim /etc/ssh/sshd_config
+	ssh-copy-id -p 22 juhani@10.13.200.129
+
+
+14. Set SSH access rights
+
+	sudo vim /etc/ssh/sshd_config
 
 			Port 2222
 			PermitRootLogin prohibit-password
@@ -118,24 +117,25 @@
 
 		systemctl restart sshd
 
-14. login to the server
-		- ssh -l juhani -p 2222 localhost
-
-15. Instll psad
-	- sudo apt install psad
-			local only
-
-	systemctl start psad
+15. login to the server
+	ssh -l juhani -p 2222 localhost
 
 16. Activate ufw
-		sudo ufw status
-		sudo ufw enable
-		sudo ufw status
-		sudo ufw allow 2222/tcp
-		sudo ufw allow 443/tcp
-		sudo ufw default deny incoming
+	sudo ufw status
+	sudo ufw enable
+	sudo ufw status
+	sudo ufw allow 2222/tcp
+	sudo ufw allow 443/tcp
+	sudo ufw default deny incoming
+	sudo ufw status numbered
+	sudo ufw delete 3
+	sudo ufw delete 4
+	sudo ufw status
+
 
 17. Set iptables
+
+	sudo apt-get install iptables-persistent
 
 	sudo iptables -P INPUT ACCEPT
 	sudo iptables -F
@@ -152,8 +152,6 @@
 	su - root
 	sudo iptables-save > /etc/iptables/rules.v4
 	exit
-	iptables-restore  < /etc/iptables/rules.v4
-	ip6tables-restore < /etc/iptables/rules.v6
 	systemctl stop    netfilter-persistent
 	systemctl start   netfilter-persistent
 	systemctl restart netfilter-persistent
@@ -167,7 +165,7 @@
 		DANGER_LEVEL3               10;
 		DANGER_LEVEL4               1500;
 		DANGER_LEVEL5               10000;
-		PORT_RANGE_SCAN_THRESHOLD   1;
+		PORT_RANGE_SCAN_THRESHOLD   2;
 		AUTO_DETECT_JOURNALCTL      Y;
 		ENABLE_SYSLOG_FILE          Y;
 		IPT_WRITE_FWDATA            Y;
@@ -176,19 +174,16 @@
 		AUTO_IDS_DANGER_LEVEL       1;
 		AUTO_BLOCK_TIMEOUT          60;
 
-	tail -f /var/log/syslog
-	while true; do sudo psad -S; sudo iptables -S | grep PSAD ; sleep 2; done
-
 	sudo psad --sig-update
 	sudo service psad restart
+
+	tail -f /var/log/syslog
+	while true; do sudo psad -S; sudo iptables -S | egrep "PSAD|13" ; sleep 2; done
 
 	sudo psad -S
 
 	ssh -p 222 -l juhani 10.13.200.134
 	ssh -p 23 -l juhani 10.13.200.134
-
-	sudo apt-get install iptables-persistent
-	sudo iptables-save
 
 19. Install Apache
 		sudo apt install apache2
