@@ -66,7 +66,10 @@
 
 
 9. Activate crontab
+  crontab -l
+  crontab -e
   @reboot     date ; bash ~/apt-get_update_upgrade.sh
+  @reboot     /sbin/iptables-restore < /etc/iptables/rules.v4
   0 4 * * 6   date ; bash ~/apt-get_update_upgrade.sh
   0 0 * * *   date ; bash ~/crontab_monitoring.sh
 
@@ -146,6 +149,9 @@
 	sudo iptables -P INPUT DROP
 	sudo iptables -S
 
+	su - root
+	sudo iptables-save > /etc/iptables/rules.v4
+	exit
 	iptables-restore  < /etc/iptables/rules.v4
 	ip6tables-restore < /etc/iptables/rules.v6
 	systemctl stop    netfilter-persistent
@@ -232,6 +238,7 @@ EOF
 		sudo cp /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-available/rs1.conf
 		sudo nano /etc/apache2/sites-available/rs1.conf
 		                ServerName rs1
+				DocumentRoot /var/www/rs1
 		sudo a2ensite rs1.conf
 		sudo a2enmod ssl
 
@@ -241,7 +248,7 @@ EOF
 
 		sudo systemctl restart apache2
 
-
+		https://10.13.200.134/
 
 
 20. Activate fail2ban
