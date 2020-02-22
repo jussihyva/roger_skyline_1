@@ -126,6 +126,8 @@ EOF
 	sudo ufw status
 	sudo ufw allow 2222/tcp
 	sudo ufw allow 443/tcp
+	sudo ufw allow 53
+	sudo ufw allow 123
 	sudo ufw default deny incoming
 	sudo ufw status numbered
 	sudo ufw delete 3
