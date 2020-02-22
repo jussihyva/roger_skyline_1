@@ -1,7 +1,9 @@
-date >> /var/log/update_script.log 2>&1
-sleep 60
-apt-get update -y >> /var/log/update_script.log 2>&1
-sleep 60
-date >> /var/log/update_script.log 2>&1
-apt-get upgrade -y >> /var/log/update_script.log 2>&1
-
+        date
+        sleep 60
+        date
+        apt-get update -y
+        date
+        sleep 60
+        date
+        apt-get upgrade -y
+        date

@@ -1,3 +1,7 @@
-@reboot     date ; bash ~/apt-get_update_upgrade.sh
-0 4 * * 6   date ; bash ~/apt-get_update_upgrade.sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+# m h  dom mon dow   command
+@reboot     bash ~/apt-get_update_upgrade.sh >> /var/log/update_script.log 2>&1
+@reboot     /sbin/iptables-restore < /etc/iptables/rules.v4
+0 4 * * 6   bash ~/apt-get_update_upgrade.sh >> /var/log/update_script.log 2>&1
 0 0 * * *   date ; bash ~/crontab_monitoring.sh
