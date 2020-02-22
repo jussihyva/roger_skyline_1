@@ -121,7 +121,10 @@ EOF
 	ssh -l juhani -p 2222 localhost
 
 16. Activate ufw
+	sudo vim /etc/default/ufw
+		IPV6=no
 	sudo ufw status
+	sudo ufw disable
 	sudo ufw enable
 	sudo ufw status
 	sudo ufw allow 2222/tcp
@@ -134,6 +137,7 @@ EOF
 	sudo ufw delete 4
 	sudo ufw status
 
+	netstat -tulpn
 
 17. Set iptables
 
@@ -314,7 +318,7 @@ EOF
 		remote_port    = 2222
 
 	sudo cp VI_2/hosts /etc/ansible/
-	ansible-playbook --ask-become-pass roger_skyline_1/VI_2/Install_Apache2.yml
+	ansible-playbook --ask-become-pass ~/roger_skyline_1/VI_2/Install_Apache2.yml
 
 
 

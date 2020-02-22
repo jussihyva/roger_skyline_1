@@ -7,8 +7,9 @@
   tasks:
     - name: Install apache2
       apt: name=apache2 state=latest
-    - name: Run echo command
-      command: echo "MOI!"
+    - name: Modify a line
+      #      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:80>" line="<VirtualHost *:8081>"
+      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:8081>" line="<VirtualHost *:80>"
       notify:
               - restart apache3
 
